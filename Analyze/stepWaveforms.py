@@ -2,9 +2,7 @@
 #
 """ This will loop over some waveforms and print them to screen 
 
-    DAQ configuration:
-    channel 2 is unamplified OPPI3
-    channel 3 is unamplified OPPI4 
+    J. Goett (goett@lanl.gov) 12/21/12
 """
 ########################################################
 def InEnergyWindow(lo,hi,value):
@@ -37,8 +35,7 @@ outputFilename=sys.argv[2]
 
 print "Inputting ", len(filenames), " files" 
 
-newfile=open(outputFilename,'wb')
-newfile.write("Run \t Event \t Time \t Channel \t Integral \n")
+newfile=ROOT.TFile(outputFilename,'RECREATE') # open output right away to enable easy histogram output
 ###############################################
 # create histograms
 #none today
@@ -48,12 +45,12 @@ OPPI3ChannelNumber=2
 OPPI4ChannelNumber=3
 
 # energy calibration
-OPPI3_EnergyToCounts= 1.00
-OPPI4_EnergyToCounts= 1.00  
+OPPI3_EnergyToCounts= 0.002
+OPPI4_EnergyToCounts= 0.002  
 
 # Energy Windows
-OPPI3_EnergyWindow=[0.00,820000.00]
-OPPI4_EnergyWindow=[0.00,820000.00]
+OPPI3_EnergyWindow=[50.00,8200.00]
+OPPI4_EnergyWindow=[50.00,8200.00]
 
 #useChan2=False
 
@@ -92,6 +89,7 @@ print "Processing ", T.GetEntries(), " Events "
 c1 = ROOT.TCanvas('c1')               
 
 for i in range( T.GetEntries() ):
+#for i in range(608421):
     T.LoadTree(i)
     T.GetEntry(i)
     event=T.event
@@ -141,6 +139,7 @@ for i in range( T.GetEntries() ):
         # check for correct channel and energy
         goodOPPI3Waveform=False
         goodOPPI4Waveform=False 
+        #goodChan2Waveform=False
         if (channel == OPPI3ChannelNumber):
             if InEnergyWindow(OPPI3_EnergyWindow[0],OPPI3_EnergyWindow[1],counts*OPPI3_EnergyToCounts):
                goodOPPI3Waveform=True
@@ -149,15 +148,19 @@ for i in range( T.GetEntries() ):
             if InEnergyWindow(OPPI4_EnergyWindow[0],OPPI4_EnergyWindow[1],counts*OPPI4_EnergyToCounts):
                goodOPPI4Waveform=True
 
-        if (goodOPPI4Waveform or goodOPPI3Waveform):  #print event information  
-	    #print "Run", runNumber, "Event ", i, "Time", eventTime, "Channel ", channel, "Integral ", counts
-	    runString=str(runNumber)
-	    eventString=str(i)
-    	    timeString=str(eventTime)
- 	    chString=str(channel)
-  	    countString=str(counts)
-            newfile.write(runString + "\t" + eventString + "\t" + timeString + "\t" + chString + "\t" + countString + "\n")
+        #if (goodOPPI4Waveform or goodOPPI3Waveform):  # draw waveform  
+        if (1):  # draw waveform  
+                wf = event.GetWaveform(i_wfm)
+                rawwf = wf
+                sampling_frequency = wf.GetSamplingFrequency()
+                sampling_period    = wf.GetSamplingPeriod()
+		wfh = wf.GimmeHist()
+		wfh.Draw()
+		c1.Update()
+		print "Event ", i, "channel ", channel, "Integral ", counts
+		raw_input("Press Enter to continue...")
                 
                         
 
-newfile.close()  
+newfile.Write()  # write all histograms to disk
+newfile.Close()  

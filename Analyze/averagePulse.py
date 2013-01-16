@@ -50,12 +50,12 @@ OPPI3ChannelNumber=2
 OPPI4ChannelNumber=3
 
 # energy calibration
-OPPI3_EnergyToCounts= 0.002
-OPPI4_EnergyToCounts= 0.002  
+OPPI3_EnergyToCounts= 1.
+OPPI4_EnergyToCounts= 1.  
 
 # Energy Windows
-OPPI3_EnergyWindow=[50.00,8200.00]
-OPPI4_EnergyWindow=[50.00,8200.00]
+OPPI3_EnergyWindow=[265E3,270E3]
+OPPI4_EnergyWindow=[265E3,270E3]
 
 #useChan2=False
 
@@ -155,12 +155,14 @@ for i in range( T.GetEntries() ):
         goodOPPI4Waveform=False 
         #goodChan2Waveform=False
         if (channel == OPPI3ChannelNumber):
-            if InEnergyWindow(OPPI3_EnergyWindow[0],OPPI3_EnergyWindow[1],counts*OPPI3_EnergyToCounts):
-               goodOPPI3Waveform=True
+            #if InEnergyWindow(OPPI3_EnergyWindow[0],OPPI3_EnergyWindow[1],counts*OPPI3_EnergyToCounts):
+            #   goodOPPI3Waveform=True
+            goodOPPI3Waveform=True
                
         elif (channel ==OPPI4ChannelNumber):
-            if InEnergyWindow(OPPI4_EnergyWindow[0],OPPI4_EnergyWindow[1],counts*OPPI4_EnergyToCounts):
-               goodOPPI4Waveform=True
+            #if InEnergyWindow(OPPI4_EnergyWindow[0],OPPI4_EnergyWindow[1],counts*OPPI4_EnergyToCounts):
+            #   goodOPPI4Waveform=True
+            goodOPPI4Waveform=True
 
         if (goodOPPI4Waveform or goodOPPI3Waveform):  # draw waveform  
                 wf = event.GetWaveform(i_wfm)
