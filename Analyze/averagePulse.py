@@ -22,6 +22,7 @@ import sys
 import os
 import glob
 import numpy
+import pylab
 
 # load MGDO so CLHEP is available
 ROOT.gApplication.ExecuteFile("$MGDODIR/Root/LoadMGDOClasses.C")
@@ -153,8 +154,8 @@ for i in range( T.GetEntries() ):
         # check for correct channel and energy
         goodOPPI3Waveform=False
         goodOPPI4Waveform=False 
-        #goodChan2Waveform=False
-        if (channel == OPPI3ChannelNumber):
+        
+	if (channel == OPPI3ChannelNumber):
             #if InEnergyWindow(OPPI3_EnergyWindow[0],OPPI3_EnergyWindow[1],counts*OPPI3_EnergyToCounts):
             #   goodOPPI3Waveform=True
             goodOPPI3Waveform=True
@@ -188,14 +189,31 @@ for i in range( T.GetEntries() ):
 
 
                 
-wfh = avgwf3.GimmeHist()
-wfh.Draw()
-c1.Update()
-raw_input("Press Enter to view average waveform 4...")                        
-wfh = avgwf4.GimmeHist()
-wfh.Draw()
-c1.Update()
+#wfh = avgwf3.GimmeHist()
+#wfh.Draw()
+#c1.Update()
+#raw_input("Press Enter to view average waveform 4...")                        
+#wfh = avgwf4.GimmeHist()
+#wfh.Draw()
+#c1.Update()
+raw_input("Press Enter to view both waveforms...")
+fig=pylab.figure()
+a4=a4/a4.max()
+a3=a3/a3.max()
+pylab.subplot(2,1,1)
+X1=numpy.arange(0,numpy.size(a3))
+pylab.plot(X1,a3,label='OPPI3')                        
+X2=numpy.arange(0,numpy.size(a4))
+pylab.plot(X2,a4,label='OPPI4')
+pylab.legend(loc='upper left')
+pylab.ylim(0,a4.max()*1.1)
+pylab.subplot(2,1,2)
+#X2=numpy.arange(0,numpy.size(a4))
+a3psd=pylab.psd(a3,Fs=100E6)
+a4psd=pylab.psd(a4,Fs=100E6)
+#pylab.plot(X2,a4)
+pylab.show()                        
 raw_input("Press Enter to quit...")                        
 
-newfile.Write()  # write all histograms to disk
+#newfile.Write()  # write all histograms to disk
 newfile.Close()  
