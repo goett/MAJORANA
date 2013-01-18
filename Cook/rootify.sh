@@ -30,4 +30,4 @@ export file=$(echo $inpath | sed 's!.*/!!')
 # copy the input file over to scratch disk first 
 
 echo 'Processing ' $file 'sourced from ' ${inpath} 
-majorcaroot --sis --validatexml --eventwindow 1us --limbufevents 2000 --label ${file}_10us ${inpath} &> $2/log/${file}
+majorcaroot --sis --validatexml --eventwindow 10us --limbufevents 2000 --label ${file}_10us ${inpath} &> $2/log/${file}
