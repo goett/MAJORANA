@@ -1,28 +1,39 @@
 library(shiny)
+library(RMySQL)
 
-load("/export/HomeArray/home/goett/Workspace/COPPI/AutoSpec/AutoSpec.RData")
+#load("/export/HomeArray/home/goett/Workspace/COPPI/AutoSpec/AutoSpec.RData")
 #str(CFrame)
 #attach(CFrame)
 #CFrame<-read.table(file='/export/HomeArray/home/goett/Workspace/COPPI/AutoSpec/xxx',header=TRUE)
 #dl<-rnorm(52000,1800,2600)
 
+driver<-dbDriver("MySQL")
+dbcon<-dbConnect(MySQL(),user="goett",dbname="COPPIs")
+
+options(shiny.maxRequestSize=-1)
+
 #Define server logic
 shinyServer(function(input,output){
-	formulaText<-reactive({
-		paste("",input$variable,sep="")
+	queryText<-reactive({
+		x<-as.character(input$variable)
+		sprintf("SELECT %s FROM autospec",x)
 	})
 
-	output$caption<-renderText({formulaText()})
+	output$caption<-renderText({queryText()})
+
+	queryResult<-reactive(dbGetQuery(dbcon,queryText()))
 
 	output$specHist<-renderPlot({
-		#hist(as.formula(formulaText()),breaks=input$bins)
-		with(CFrame,{
-			str(CFrame)
-			#hist(as.formula(formulaText()),breaks=input$bins)
-			hist(input$variable,breaks=input$bins)
-		})
-		#hist(CFrame$Integral,breaks=input$bins)
-		#hist(dl,breaks=input$bins)
+		lims<-c(min(queryResult()[,1]),max(queryResult()[,1]))
+		hist(queryResult()[,1],xlim=lims,breaks=input$bins)
 	})
+
+	output$downloadData <- downloadHandler(
+		filename = function() {paste('xxx','.csv',sep='')},
+		content = function(file) {
+			write.csv(queryResult(),file)
+		},
+		contentType="text/csv"
+	)
 
 })

@@ -2,14 +2,40 @@ MJD Monitor application for Shiny and sql server
 created: Johnny Goett goett@lanl.gov
 
 >overview
+     This repository contains code for a prototype online analysis engine. The AutoSpec script is run to populate a MySQL database with information of interest. A shiny application then serves this information in various ways to a third party via a web interface. 
+	This engine can be used for online monitoring by periodically updating the database tables with subsequent executions of the AutoSpec script at points of interest; for example, when a new ORCAROOT file is loaded to a data directory. 
 
 >requires
+     Execution of the AutoSpec script requires a functional installation of MGDO with TAM enabled and GAT.
 
->instructions
+     This web application runs on R with the Shiny package.
+     At a minimum, running this Shiny application will require the following R packages available at R-CRAN
+	DBI_0.2-7
+	RJSONIO_1.0-3
+	caTools_1.14
+	httpuv_1.0.6.3
+	xtable_1.7-1
+	digest_0.6.3
+	markdown_0.6.3
+	Cairo_1.5-2
+	testthat_0.7.1
+	bitops_1.0-5
+	googleVis_0.4.3
+
+>instructions for running the development server (host=localhost, access to database produced by AutoSpec script)
+	1)Open R
+	2)$library(shiny)
+	3)$runApp("<PATH TO AutoSpec DIRECTORY>")
+	Your default web browser should open and display the web application.
+
+>instructions for hosting the website on a server
+	To do.
 
 >in
+	To do.
 
 >out
+	see localhost:8100
  
 
 
