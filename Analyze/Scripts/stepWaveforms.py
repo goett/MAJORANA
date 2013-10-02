@@ -31,9 +31,11 @@ ROOT.gApplication.ExecuteFile("$GATDIR/LoadGATClasses.C")
 inputpath=sys.argv[1]
 filenames=glob.glob(inputpath)
 
-outputFilename=sys.argv[2]
+outputFilename=sys.argv[-1]
 
 print "Inputting ", len(filenames), " files" 
+for i in range(len(filenames)):
+	print filenames[i]
 
 newfile=ROOT.TFile(outputFilename,'RECREATE') # open output right away to enable easy histogram output
 ###############################################
@@ -148,8 +150,7 @@ for i in range( T.GetEntries() ):
             if InEnergyWindow(OPPI4_EnergyWindow[0],OPPI4_EnergyWindow[1],counts*OPPI4_EnergyToCounts):
                goodOPPI4Waveform=True
 
-        #if (goodOPPI4Waveform or goodOPPI3Waveform):  # draw waveform  
-        if (1):  # draw waveform  
+        if (goodOPPI4Waveform or goodOPPI3Waveform):  # draw waveform  
                 wf = event.GetWaveform(i_wfm)
                 rawwf = wf
                 sampling_frequency = wf.GetSamplingFrequency()

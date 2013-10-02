@@ -43,7 +43,7 @@ outputFilename=sys.argv[2]
 print "Inputting ", len(filenames), " files" 
 
 newfile=open(outputFilename,'wb')
-newfile.write("Run \t Event \t Time \t Channel \t Integral \t Baseline \t BaselineRMS \t RiseTime \t TrapE \t Amp\n")
+newfile.write("Run\t Event\t Time\t Channel\t Integral\t Baseline\t BaselineRMS\t RiseTime\t TrapE\t Amp\n")
 ###############################################
 # create histograms
 #none today
