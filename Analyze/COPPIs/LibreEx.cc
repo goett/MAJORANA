@@ -132,7 +132,8 @@ int main(int argc, char** argv)
     // You have to do this to get TApplication to update the canvas
     gSystem->ProcessEvents();
     c1->Update();
-    cout << " Processed " << ientry << " / " << events << '\r'; 
+    // Inform user of progress...
+    if(ientry%1000 == 0 ) cout << " Processed " << ientry << " / " << events << '\r'; 
   }  
   cout << " Process Complete. " << endl;
 
