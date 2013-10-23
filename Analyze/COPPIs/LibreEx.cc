@@ -148,6 +148,7 @@ int main(int argc, char** argv)
   oF->Close();  
 
   theApp.Run();
+  theApp.Terminate(0);
   return 0;
 }
      

@@ -36,7 +36,7 @@
 #include "MGWFTrapezoidalFilter.hh"
 #include "MGWFBaselineRemover.hh"
 #include "MGWFDerivative.hh"
-#include "MGWFLibrarianSumPulses.hh"
+#include "MGWFLibrarianDefault.hh"
 
 //GAT INCLUDES
 #include "GATWaveformTransformer.hh"
@@ -148,9 +148,10 @@ int main(int argc, char** argv)
   cout << p1332c3->GetNBooks() << " Waveforms added to channel 3 library " << endl;
 
   cout << " Transform waveform libraries " << endl;
-  MGWFLibrarianSumPulses summer("SumPulseTester");
-  summer.TransformInPlace(p1332c2);
-  summer.TransformInPlace(p1332c3);
+  MGWFLibrarianDefault summer("LibrarianTester");
+  summer.SetSumPulseToLibrary();
+  summer.TransformInPlace(*p1332c2);
+  summer.TransformInPlace(*p1332c3);
   cout << p1332c2->GetNBooks() << " Waveforms remaining in channel 2 library " << endl;
   cout << p1332c3->GetNBooks() << " Waveforms remaining in channel 3 library " << endl;
   
@@ -159,6 +160,7 @@ int main(int argc, char** argv)
   oF->Close();  
 
   theApp.Run();
+  theApp.Terminate(0);
   return 0;
 }
      
