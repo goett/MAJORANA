@@ -146,7 +146,8 @@ int main(int argc, char** argv)
   cout << p1332c3->GetNBooks() << " Waveforms added to channel 3 library " << endl;
   oF->Write();
   oF->Close();  
-
+  c1->Close();
+  
   theApp.Run();
   theApp.Terminate(0);
   return 0;

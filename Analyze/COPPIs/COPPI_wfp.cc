@@ -1,5 +1,5 @@
 /*
-* Johnny Goett (goettj@lanl.gov)
+* Johnny Goett (goett@lanl.gov)
 * 9.18.2013
 * 
 * Description: Produce average waveforms for determination of pulse shape
@@ -192,9 +192,13 @@ int main(int argc, char** argv)
         else c1->Update();
     }
     // You have to do this to get TApplication to update the canvas
-    gSystem->ProcessEvents();
-    c1->Update();
-    cout << " Processed " << ientry << " / " << events << '\r'; 
+    // but only do it every so often
+    if( ientry%1000 == 0)
+    {
+    	gSystem->ProcessEvents();
+    	c1->Update();
+    	cout << " Processed " << ientry << " / " << events << '\r';
+    }
   }  
   cout << " Process Complete. " << endl;
   (*p1332c2)/=ch2wfs;    
@@ -213,6 +217,8 @@ int main(int argc, char** argv)
   oF->Close();  
 
   theApp.Run();
+  c1->Close();
+  theApp.Terminate(0);
   return 0;
 }
      
