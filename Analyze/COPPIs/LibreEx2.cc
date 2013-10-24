@@ -36,7 +36,7 @@
 #include "MGWFTrapezoidalFilter.hh"
 #include "MGWFBaselineRemover.hh"
 #include "MGWFDerivative.hh"
-#include "MGWFLibrarianDefault.hh"
+#include "MGWFLibBuildAverage.hh"
 
 //GAT INCLUDES
 #include "GATWaveformTransformer.hh"
@@ -131,12 +131,15 @@ int main(int argc, char** argv)
       
     }
     
-    // You have to do this to get TApplication to update the canvas
-    gSystem->ProcessEvents();
-    c1->Update();
     // Inform user of progress...
-    if(ientry%1000 == 0 ) cout << " Processed " << ientry << " / " << events << '\r'; 
-  }  
+    if(ientry%1000 == 0 )
+    { 
+    	// You have to do this to get TApplication to update the canvas
+    	gSystem->ProcessEvents();
+    	c1->Update();
+    	cout << " Processed " << ientry << " / " << events << '\r'; 
+    }  
+}  
   cout << " Process Complete. " << endl;
 
   // Stop timer and print results.
@@ -148,19 +151,28 @@ int main(int argc, char** argv)
   cout << p1332c3->GetNBooks() << " Waveforms added to channel 3 library " << endl;
 
   cout << " Transform waveform libraries " << endl;
-  MGWFLibrarianDefault summer("LibrarianTester");
-  summer.SetSumPulseToLibrary();
-  summer.TransformInPlace(*p1332c2);
-  summer.TransformInPlace(*p1332c3);
+  MGWFLibBuildAverage summer("LibrarianTester");
+  summer.Transform(p1332c2);
+  MGTWaveform* c2Avg = new MGTWaveform();
+  c2Avg->MakeSimilarTo(*(summer.GetAverage())); 
+  (*c2Avg) += *(summer.GetAverage()); 
+  summer.Transform(p1332c3);
+  MGTWaveform* c3Avg = new MGTWaveform();
+  c3Avg->MakeSimilarTo(*(summer.GetAverage())); 
+  (*c3Avg) += (*summer.GetAverage()); 
   cout << p1332c2->GetNBooks() << " Waveforms remaining in channel 2 library " << endl;
   cout << p1332c3->GetNBooks() << " Waveforms remaining in channel 3 library " << endl;
-  
+
+  TH1D* awfh2 = c2Avg->GimmeHist("ach2");
+  TH1D* awfh3 = c3Avg->GimmeHist("ach3");
+  awfh2->Write();
+  awfh3->Write();  
    
   oF->Write();
   oF->Close();  
 
-  theApp.Run();
-  theApp.Terminate(0);
+  //theApp.Run();
+  //theApp.Terminate(0);
   return 0;
 }
      
