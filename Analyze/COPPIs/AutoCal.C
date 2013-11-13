@@ -5,8 +5,12 @@
 #include "TCanvas.h"
 #include "TF1.h"
 #include "TSpectrum.h"
+#include "TGraphErrors.h"
 #include "TFitResult.h"
-//#include "RooFit.h"
+#include "RooGlobalFunc.h"
+#include "RooFit.h"
+
+using namespace RooFit ;
 
 struct calData{
     Float_t adc; //TSpectrum guess
@@ -18,17 +22,53 @@ bool CompareByadc(const calData& a, const calData& b){
 	return a.adc < b.adc;
 }
 
-//TGraphErrors* ExtractCalCurve(vector<Float_t>& FitPositions, vector<Float_t>& Energies)
-void ExtractCalCurve(vector<Float_t>& FitPositions, vector<Float_t>& Energies)
+TGraphErrors* ExtractCalCurve(vector<calData>& FitPositions, vector<Float_t>& Energies)
+//void ExtractCalCurve(vector<Float_t>& FitPositions, vector<Float_t>& Energies)
 {
-    //Get highest energy peak
+    //TF1* calFit = new TF1("calFit","[0]*x + [1]",0,800E3);
+    TGraphErrors* calCurve = new TGraphErrors(Energies.size());
     
+    //Get highest energy peak and estimate [0]
+    std::vector<calData>::iterator pit;
+    std::vector<Float_t>::iterator eit;
     
+    pit = max_element(FitPositions.begin(),FitPositions.end(),CompareByadc);
+    eit = max_element(Energies.begin(),Energies.end());
     
-    //Extrapolate coefficient
-    
-    //
-    return; 
+    //Extrapolate coefficient and place first point
+    int currPoint = 1;
+    calCurve->SetPoint(currPoint,(*pit).fadc,*eit);
+    calCurve->SetPointError(currPoint,(*pit).efadc,0.0);
+    TFitResultPtr r = calCurve->Fit("pol1","SQ");   
+    Float_t a = r->Parameter(1);
+
+    Float_t CurrentPeak = 0.0;
+    Float_t CurrentEnergy = 0.0;
+    Float_t CurrentEnergyEst = 0.0;
+    // Loop through found peaks and locate closest estimated energy
+    // Assume fitted peaks are already ordered from lowest to highest
+    for(std::vector<calData>::iterator i = --(FitPositions.end()); i!=FitPositions.begin(); --i)
+    {
+        currPoint++;
+        CurrentPeak = (*i).fadc;
+        CurrentEnergyEst = CurrentPeak*a;
+        Float_t CurrentDelta = 800E3;
+        for(std::vector<Float_t>::iterator j = Energies.begin(); j!=Energies.end(); j++)
+	{
+		if( abs(*j - CurrentEnergyEst) < CurrentDelta)
+		{
+			CurrentDelta = abs(*j - CurrentEnergyEst);
+                        CurrentEnergy = *j;
+		}
+	} 
+	
+	calCurve->SetPoint(currPoint,CurrentPeak,CurrentEnergy);
+        calCurve->SetPointError(currPoint,(*i).efadc,CurrentDelta);
+        r = calCurve->Fit("pol1","SQ");
+        a = r->Parameter(1);
+    }
+    r->Print("V");
+    return calCurve; 
 }
 
 void Play()
@@ -47,8 +87,10 @@ void Play()
 
    TCanvas* c1 = new TCanvas("c1","",1500,800);
    TCanvas* c2 = new TCanvas("c2","",1500,800);
+   TCanvas* c3 = new TCanvas("c3","",1500,800);
    c1->Divide(1,2);
    c2->Divide(1,2);
+   c3->Divide(1,2);
     
    // --- Find Peaks in Spectrum ---
    c1->cd(1);
@@ -136,6 +178,16 @@ void Play()
    // --- Fit centroids of peaks with linear function
 
    // --- Build Calibration Curve
+
+   Float_t thE[] = {2614,2614-511,2614-1022,1620,1512,1282,1093,1078,982,952,927,893,860,821,785,763,748,727,583,510,300,277,238}; 
+   vector<Float_t> cE(thE,thE+sizeof(thE)/sizeof(Float_t));
+
+   c3->cd(1);
+   TGraphErrors* cal146 = ExtractCalCurve(x146,cE);
+   cal146->Draw("AP");
+   c3->cd(2);
+   TGraphErrors* cal147 = ExtractCalCurve(x147,cE);
+   cal147->Draw("AP");
    
    // --- Plot residuals
 
