@@ -179,8 +179,10 @@ void Play()
 
    // --- Build Calibration Curve
 
-   Float_t thE[] = {2614,2614-511,2614-1022,1620,1512,1282,1093,1078,982,952,927,893,860,821,785,763,748,727,583,510,300,277,238}; 
-   vector<Float_t> cE(thE,thE+sizeof(thE)/sizeof(Float_t));
+   Float_t th228E[] = {2614,2614-511,2614-1022,1620,1512,1282,1093,1078,982,952,927,893,860,821,785,763,748,727,583,510,300,277,238}; 
+   Float_t th232E[] = {2614,2614-511,2614-1022,1588,968,911,860,794,726,583,510,338,238}; 
+   //vector<Float_t> cE(th228E,th228E+sizeof(th228E)/sizeof(Float_t));
+   vector<Float_t> cE(th232E,th232E+sizeof(th232E)/sizeof(Float_t));
 
    c3->cd(1);
    TGraphErrors* cal146 = ExtractCalCurve(x146,cE);
