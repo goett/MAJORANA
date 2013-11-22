@@ -79,8 +79,8 @@ void Play()
 
     TChain* S = new TChain("COPPI_Tree");
     //Look at COPPI calibration data from Nov 2013
-    S->Add("COPPI_Zr_r1130.root");
-    S->Add("COPPI__run1131.root");
+    S->Add("COPPIsA_Zr_r1130.root");
+    S->Add("COPPIsA__run1131.root");
     
     TH1D *hc146 = new TH1D("hc146","Channel 146", 2000, 0, 800E3 );
     TH1D *hc147 = new TH1D("hc147","Channel 147", 2000, 0, 800E3 );
