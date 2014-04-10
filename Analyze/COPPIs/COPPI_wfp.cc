@@ -216,9 +216,9 @@ int main(int argc, char** argv)
   oF->Write();
   oF->Close();  
 
-  theApp.Run();
+  //theApp.Run();
   c1->Close();
-  theApp.Terminate(0);
+  //theApp.Terminate(0);
   return 0;
 }
      
